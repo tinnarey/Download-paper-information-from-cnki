@@ -21,9 +21,9 @@ class BeautifulPicture():
         p = 1
         for num in range(p, p + page):
             # 这里的num是页码 ,url需要在所需爬取的页面二次加载复制
-            web_url='http://kns.cnki.net/kns/brief/brief.aspx?curpage=%s&RecordsPerPa' \
-                    'ge=20&QueryID=3&ID=&turnpage=1&tpagemode=L&dbPrefix=SCDB' \
-                    '&Fields=&DisplayMode=listmode&PageName=ASP.brief_default_result_aspx&isinEn=1#J_ORDER&'% num
+            web_url='http://kns.cnki.net/kns/brief/brief.aspx?curpage=%s&RecordsP' \
+                    'erPage=50&QueryID=3&ID=&turnpage=1&tpagemode=L&dbPrefix=SCDB&Fields=' \
+                    '&DisplayMode=listmode&PageName=ASP.brief_default_result_aspx&isinEn=1#J_ORDER&'% num
 
             # 这里开始是时间控制
             t = int(time.clock())
@@ -51,6 +51,7 @@ class BeautifulPicture():
 
             #这里开始使用正则抓列表里每一个文献的url
             soup = re.findall(r'<TR([.$\s\S]*?)</TR>', r.text)
+            # print(r.text)
             for a in soup:
                 i1 += 1
                 name = re.search(r'_blank.*<', a)
@@ -58,6 +59,8 @@ class BeautifulPicture():
                 name = re.sub(r'<font class=Mark>', '', name)
                 name = re.sub(r'</font>', '', name)
 
+                time_his = re.search(r'([1-2][0-9][0-9][0-9]\-([0-1][0-9])\-([0-9][0-9]))', a)
+                time_his = time_his.group()
                 url = re.search(r'href=.*? ', a)#将’‘看做一个子表达式，惰性匹配一次就可以了
                 url = url.group()
 
@@ -100,7 +103,9 @@ class BeautifulPicture():
                 ws.write(i, 0, name)    #文献名
                 ws.write(i, 1, writer)  #作者名
                 ws.write(i, 2, type)    #文献类别
-                ws.write(i, 16, summary)  #摘要
+                ws.write(i, 17, summary)  #摘要
+
+                ws.write(i, 16, time_his)  #发表时间
 
                 # 期刊 以及是否为核心期刊
                 sourinfo = re.search(r'sourinfo([.$\s\S]*?)</div', d)
@@ -156,14 +161,14 @@ class BeautifulPicture():
                  '546830331%2C%22http%3A%2F%2Fwww.cnki.net%2F%22%5D; _pk_ses=*; LID=WEEvREcwSlJHSldRa1FhcEE0' \
                  'QVRCZ1g2NkluUHltb2J3ek9aYWpKS0gzQT0=$9A4hF_YAuvQ5obgVAqNKPCYcEjKensW4IQMovwHtwkF4VYPoHbKxJ' \
                  'w!!; c_m_LinID=LinID=WEEvREcwSlJHSldRa1FhcEE0QVRCZ1g2NkluUHltb2J3ek9aYWpKS0gzQT0=$9A4hF_YA' \
-                 'uvQ5obgVAqNKPCYcEjKensW4IQMovwHtwkF4VYPoHbKxJw!!&ot=01/08/2019 12:27:50; c_m_expire=2019-01-07 14:10:50'
+                 'uvQ5obgVAqNKPCYcEjKensW4IQMovwHtwkF4VYPoHbKxJw!!&ot=01/08/2019 12:27:50; c_m_expire=2019-01-07 21:10:50'
         headers = {'User-Agent': user_agent,
                    "Referer": referer,
                    "cookie": cookie}
-        r = requests.get(url, headers=headers, timeout=80)
+        r = requests.get(url, headers=headers, timeout=130)
         return r
 
-tablename = 'nlp'
+tablename = 'paper of cov and fearture'
 work_book=xlwt.Workbook(encoding='utf-8')
 sheet=work_book.add_sheet('文献信息')
 sheet.write(0,0,'文章名字')
@@ -173,11 +178,13 @@ sheet.write(0,3,'期刊')
 sheet.write(0,4,'是否中文核心')
 sheet.write(0,5,'基金来源')
 sheet.write(0,6,'关键字')
-sheet.write(0,16,'摘要')
+sheet.write(0,16,'发表时间')
+sheet.write(0,17,'摘要')
 work_book.save(tablename+'.xls')
 
 print('开始时间',time.clock())
-page = 10 #一共需要爬取的页数
+page = 2 #一共需要爬取的页数
 beauty = BeautifulPicture()  # 创建类的实例
 beauty.get_pic()  # 执行类中的方法
 print('结束时间',time.clock())
+
