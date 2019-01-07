@@ -1,4 +1,4 @@
-# Python-
+# Python-爬取知网
 爬取知网页面的文献信息，并存在Excel的内
 
 环境：Python 3，谷歌浏览器，相应的包（pip install **）
