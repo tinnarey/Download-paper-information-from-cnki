@@ -10,6 +10,7 @@
 
 2、把1 复制的网址里面curpage= 后面的数字改为 %s
 
-3、cookie  1里面有个开头是brief.aspx? 这里 点击一下 右侧有个cookie 复制 替换代码的cookie
+3、cookie 修改 ：1里面有个开头是brief.aspx？这里点击一下右侧有个cookie复制替换代码的cookie
+
 
 4、cookie 里面的时间需要改一下 可以爬的久一下  修改规则代码有说明
